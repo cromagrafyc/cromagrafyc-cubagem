@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cromagrafyc Cubagem</title>
+<style>
+:root {
+  --site-primary: #173c36;
+  --site-on-primary: #ffffff;
+  --site-secondary: #dcebe5;
+  --site-on-secondary: #173c36;
+  --site-background: #f4f7f5;
+  --site-on-background: #172522;
+  --site-font-body: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --site-font-heading: Inter, ui-sans-serif, system-ui, sans-serif;
+  --site-heading-scale: 1;
+  --site-spacing-scale: 1;
+  --site-radius-scale: 1;
+  --site-decoration-opacity: 1;
+  color-scheme: light dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: var(--site-font-body); background: light-dark(#f4f7f5,#101715); color: light-dark(#172522,#e8f0ec); }
+#app { min-height: 100vh; background-color: light-dark(var(--site-background), #101715); color: light-dark(var(--site-on-background), #e8f0ec); border-radius: 0; }
+.topbar { background: var(--site-primary); color: var(--site-on-primary); padding: calc(24px * var(--site-spacing-scale)) max(20px, calc((100vw - 1180px)/2)); }
+.brand { display:flex; align-items:center; gap:12px; font-weight:800; letter-spacing:.12em; font-size:13px; }
+.brand-mark { display:grid; place-items:center; width:42px; height:42px; border:1px solid #ffffff70; border-radius:12px; font-size:22px; }
+.topbar h1 { font-family:var(--site-font-heading); font-size:calc(30px * var(--site-heading-scale)); margin:18px 0 7px; letter-spacing:-.035em; }
+.topbar p { margin:0; color:#d8e8e1; max-width:700px; line-height:1.5; }
+main { max-width:1180px; margin:auto; padding:26px 20px 48px; }
+.tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:22px; }
+.tab { border:1px solid #cbd8d1; color:inherit; background:transparent; border-radius:999px; padding:10px 15px; cursor:pointer; font-weight:650; }
+.tab.active { background:var(--site-primary); color:var(--site-on-primary); border-color:var(--site-primary); }
+.layout { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr); gap:20px; align-items:start; }
+.card { background:light-dark(#fff,#1b2420); border:1px solid light-dark(#dce5df,#33433b); border-radius:16px; padding:22px; box-shadow:0 5px 18px #152b2010; }
+.card h2 { margin:0 0 5px; font-size:20px; letter-spacing:-.02em; }
+.sub { color:light-dark(#5c6e65,#b1c2b9); font-size:13px; line-height:1.5; margin:0 0 20px; }
+.section-title { margin:20px 0 12px; font-size:13px; text-transform:uppercase; letter-spacing:.09em; font-weight:800; color:light-dark(#52675c,#b1c2b9); }
+.fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px; }
+.field { display:flex; flex-direction:column; gap:6px; min-width:0; }
+.field.full { grid-column:1/-1; }
+label { font-size:13px; font-weight:650; }
+input,select { width:100%; padding:11px 12px; border:1px solid light-dark(#cbd8d1,#43544a); border-radius:9px; background:light-dark(#fff,#111a16); color:inherit; font:inherit; font-size:14px; }
+input:focus,select:focus { outline:2px solid #6a9c83; outline-offset:1px; }
+.hint { font-size:11px; color:light-dark(#718178,#9dafa4); }
+.note { padding:12px 13px; border-radius:10px; background:light-dark(#edf5f0,#24362d); color:light-dark(#365447,#d0e6da); font-size:12px; line-height:1.5; margin-top:15px; }
+.btnrow { display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; }
+button { font:inherit; cursor:pointer; }
+.btn { border:1px solid var(--site-primary); border-radius:10px; padding:11px 15px; font-weight:750; }
+.btn.primary { background:var(--site-primary); color:var(--site-on-primary); }
+.btn.secondary { background:transparent; color:inherit; border-color:light-dark(#cbd8d1,#43544a); }
+.result-hero { background:var(--site-primary); color:white; border-radius:13px; padding:19px; margin:18px 0; }
+.result-hero .label { color:#d8e8e1; font-size:12px; }
+.result-hero .big { font-size:36px; font-weight:800; letter-spacing:-.04em; margin:5px 0; }
+.result-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.metric { background:light-dark(#f1f6f3,#24312a); border-radius:11px; padding:14px; min-width:0; }
+.metric .label { font-size:12px; color:light-dark(#61746a,#b6c9be); }
+.metric .value { font-size:21px; font-weight:800; margin-top:6px; overflow-wrap:anywhere; }
+.metric .small { font-size:11px; color:light-dark(#718178,#a7b9af); margin-top:3px; }
+.status { display:inline-flex; align-items:center; gap:6px; font-size:12px; border-radius:999px; padding:6px 9px; background:light-dark(#fff1d6,#4a3820); color:light-dark(#77511a,#ffe1a0); }
+.status.good { background:light-dark(#e0f3e7,#1d3c2b); color:light-dark(#21623c,#a8e8bc); }
+.table-wrap { overflow-x:auto; margin-top:14px; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+th,td { padding:10px 8px; border-bottom:1px solid light-dark(#e0e8e3,#34433b); text-align:left; white-space:nowrap; }
+th { color:light-dark(#62746a,#b1c2b9); font-size:11px; text-transform:uppercase; letter-spacing:.04em; }
+.hidden { display:none!important; }
+.footer { font-size:11px; color:light-dark(#728178,#9eafa6); line-height:1.5; margin-top:16px; }
+#printReport { display:none; }
+@media(max-width:800px) { .layout {grid-template-columns:1fr;} .topbar {padding:22px 20px;} main {padding:18px 12px 36px;} .card {padding:17px;} .topbar h1 {font-size:26px;} }
+@media(max-width:420px) { .fields {grid-template-columns:1fr;} .field.full {grid-column:auto;} .result-grid {grid-template-columns:1fr 1fr;} .metric .value {font-size:18px;} }
+@media print { body,#app {background:#fff!important;color:#111!important;} .topbar,.tabs,.form-card,.btnrow,.no-print {display:none!important;} main {padding:0;max-width:none;} .layout {display:block;} .result-card {border:0;box-shadow:none;padding:0;} #printReport {display:block;} .card {break-inside:avoid;} }
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark">◈</div><div>CROMAGRAFYC <span style="font-weight:400;opacity:.75">/ FERRAMENTAS COMERCIAIS</span></div></div>
+    <h1>Cubagem & estimativa de frete</h1>
+    <p>Simule volumes de expedição para sacolas, embalagens de cartão, caixas de correio e envelopes e-commerce — antes de fechar o orçamento.</p>
+  </header>
+  <main>
+    <div class="tabs no-print" role="tablist" aria-label="Tipo de produto">
+      <button class="tab active" data-product="Sacolas de papel">Sacolas de papel</button>
+      <button class="tab" data-product="Embalagens de cartão">Embalagens de cartão</button>
+      <button class="tab" data-product="Caixas de correio">Caixas de correio</button>
+      <button class="tab" data-product="Envelopes e-commerce">Envelopes e-commerce</button>
+      <button class="tab" data-product="Produto genérico">Outro produto</button>
+    </div>
+    <div class="layout">
+      <section class="card form-card">
+        <h2>Dados do orçamento</h2>
+        <p class="sub">Informe as medidas da embalagem e como pretende acondicionar o pedido. As medidas do fardo são externas, já com o material acomodado.</p>
+        <div class="fields">
+          <div class="field full"><label for="job">Cliente / referência do orçamento (opcional)</label><input id="job" placeholder="Ex.: Cliente ABC — sacola kraft" /></div>
+          <div class="field"><label for="qty">Quantidade total de unidades</label><input id="qty" type="number" min="1" step="1" value="5000" /></div>
+          <div class="field"><label for="unit">Unidade das medidas</label><select id="unit"><option value="cm">Centímetros (cm)</option><option value="mm">Milímetros (mm)</option><option value="m">Metros (m)</option></select></div>
+        </div>
+        <div class="section-title">Medidas da embalagem individual</div>
+        <div class="fields">
+          <div class="field"><label for="prodL">Comprimento / largura</label><input id="prodL" type="number" min="0" step="any" value="32" /></div>
+          <div class="field"><label for="prodW">Largura / altura</label><input id="prodW" type="number" min="0" step="any" value="24" /></div>
+          <div class="field"><label for="prodH">Espessura / lateral (opcional)</label><input id="prodH" type="number" min="0" step="any" value="0.5" /></div>
+          <div class="field"><label for="unitWeight">Peso por unidade (g, opcional)</label><input id="unitWeight" type="number" min="0" step="any" placeholder="Ex.: 18" /></div>
+        </div>
+        <div class="section-title">Acondicionamento por fardo</div>
+        <div class="fields">
+          <div class="field"><label for="perBundle">Unidades por fardo</label><input id="perBundle" type="number" min="1" step="1" value="200" /></div>
+          <div class="field"><label for="bundles">Quantidade de fardos (automática)</label><input id="bundles" readonly value="25" /></div>
+          <div class="field"><label for="packL">Comprimento externo do fardo</label><input id="packL" type="number" min="0" step="any" value="60" /></div>
+          <div class="field"><label for="packW">Largura externa do fardo</label><input id="packW" type="number" min="0" step="any" value="40" /></div>
+          <div class="field"><label for="packH">Altura externa do fardo</label><input id="packH" type="number" min="0" step="any" value="30" /></div>
+          <div class="field"><label for="bundleWeight">Peso bruto por fardo (kg, opcional)</label><input id="bundleWeight" type="number" min="0" step="any" placeholder="Incluindo embalagem" /></div>
+        </div>
+        <div class="note"><strong>Importante:</strong> informe as medidas externas reais ou estimadas de cada fardo. O aplicativo não consegue deduzir com segurança a espessura de um pacote apenas pelas dimensões da embalagem individual.</div>
+        <div class="section-title">Parâmetros de frete</div>
+        <div class="fields">
+          <div class="field"><label for="factor">Fator de cubagem (kg/m³)</label><input id="factor" type="number" min="0" step="any" value="300" /></div>
+          <div class="field"><label for="rate">Tarifa por kg tarifável (R$)</label><input id="rate" type="number" min="0" step="any" value="4" /></div>
+          <div class="field"><label for="minimum">Frete mínimo (R$)</label><input id="minimum" type="number" min="0" step="any" value="0" /></div>
+          <div class="field"><label for="extras">Taxas adicionais (R$)</label><input id="extras" type="number" min="0" step="any" value="0" /></div>
+          <div class="field"><label for="realWeight">Peso real total (kg, se conhecido)</label><input id="realWeight" type="number" min="0" step="any" placeholder="Se vazio, tentaremos estimar" /></div>
+          <div class="field"><label for="carrier">Transportadora / tabela (opcional)</label><input id="carrier" placeholder="Ex.: tabela interna" /></div>
+        </div>
+        <div class="btnrow no-print"><button class="btn primary" id="calculate">Calcular cubagem</button><button class="btn secondary" id="reset">Limpar formulário</button></div>
+      </section>
+      <section class="card result-card">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><h2>Resultado da simulação</h2><p class="sub" style="margin:5px 0 0">Resumo estimado do pedido</p></div><span id="quality" class="status">● Aguardando cálculo</span></div>
+        <div class="result-hero"><div class="label">Cubagem total</div><div class="big" id="totalM3">— m³</div><div class="label" id="bundleSummary">Informe os dados para calcular</div></div>
+        <div class="result-grid">
+          <div class="metric"><div class="label">Total de fardos</div><div class="value" id="outBundles">—</div><div class="small">Volumes de expedição</div></div>
+          <div class="metric"><div class="label">Peso cubado</div><div class="value" id="outCubed">— kg</div><div class="small">Cubagem × fator</div></div>
+          <div class="metric"><div class="label">Peso real / estimado</div><div class="value" id="outWeight">— kg</div><div class="small" id="weightNote">Conforme dados informados</div></div>
+          <div class="metric"><div class="label">Peso tarifável</div><div class="value" id="outChargeable">— kg</div><div class="small">Maior entre peso real e cubado*</div></div>
+        </div>
+        <div class="result-hero" style="margin-bottom:12px;background:light-dark(#e1eee7,#24392e);color:light-dark(#173c36,#e9f5ed)"><div class="label" style="color:inherit;opacity:.75">Frete de referência</div><div class="big" id="outFreight">R$ —</div><div class="label" style="color:inherit;opacity:.75" id="freightNote">Com base nos parâmetros inseridos</div></div>
+        <div class="section-title">Detalhamento dos volumes</div>
+        <div class="table-wrap"><table><thead><tr><th>Tipo</th><th>Qtd.</th><th>Dimensões externas</th><th>m³/un.</th><th>m³ total</th></tr></thead><tbody id="volumeRows"><tr><td colspan="5">Preencha os dados e clique em calcular.</td></tr></tbody></table></div>
+        <div id="printReport"></div>
+        <div class="btnrow no-print"><button class="btn primary" id="print">Imprimir / salvar PDF</button><button class="btn secondary" id="copy">Copiar resumo</button></div>
+        <p class="footer">*Regra simplificada de referência. Confirme com a transportadora o fator, o peso tarifável, arredondamentos, frete mínimo, impostos, restrições de dimensão e taxas aplicáveis. Esta ferramenta não consulta tarifas em tempo real.</p>
+      </section>
+    </div>
+  </main>
+</div>
+<script>
+(() => {
+ const $ = id => document.getElementById(id);
+ let product = 'Sacolas de papel';
+ const fields = ['qty','prodL','prodW','prodH','unitWeight','perBundle','packL','packW','packH','bundleWeight','factor','rate','minimum','extras','realWeight'];
+ const num = id => { const v = $(id).value.trim(); return v === '' ? null : Number(v); };
+ const fmt = (v, digits=2) => Number(v).toLocaleString('pt-BR',{minimumFractionDigits:digits,maximumFractionDigits:digits});
+ const brl = v => Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+ const dimToM = v => { const unit=$('unit').value; return v * (unit==='mm'?0.001:unit==='cm'?0.01:1); };
+ function calculate() {
+   const qty=num('qty'), per=num('perBundle'), L=num('packL'), W=num('packW'), H=num('packH');
+   const factor=num('factor'), rate=num('rate'), min=num('minimum') ?? 0, extras=num('extras') ?? 0;
+   const valid = qty!==null && qty>0 && Number.isInteger(qty) && per!==null && per>0 && Number.isInteger(per) && [L,W,H].every(x=>x!==null&&x>0) && factor!==null&&factor>=0&&rate!==null&&rate>=0&&min>=0&&extras>=0;
+   if (!valid) { $('quality').className='status'; $('quality').textContent='● Verifique os campos'; $('totalM3').textContent='— m³'; $('bundleSummary').textContent='Quantidade, fardos, medidas e tarifas devem ser válidos.'; return null; }
+   const count=Math.ceil(qty/per), lastQty=qty-(count-1)*per;
+   const packM3=dimToM(L)*dimToM(W)*dimToM(H), totalM3=packM3*count, cubed=totalM3*factor;
+   const bw=num('bundleWeight'), unitWeight=num('unitWeight'), realInput=num('realWeight');
+   let weight, weightSource;
+   if(realInput!==null&&realInput>=0){weight=realInput;weightSource='Peso real informado';}
+   else if(bw!==null&&bw>=0){weight=bw*count;weightSource='Estimado pelo peso bruto por fardo';}
+   else if(unitWeight!==null&&unitWeight>=0){weight=unitWeight*qty/1000;weightSource='Estimado pelo peso unitário; sem tara dos fardos';}
+   else {weight=null;weightSource='Peso real não informado';}
+   const chargeable=weight===null?cubed:Math.max(weight,cubed);
+   const freight=Math.max(min,chargeable*rate)+extras;
+   $('quality').className='status '+(bw!==null||realInput!==null?'good':''); $('quality').textContent=(bw!==null||realInput!==null)?'● Dados de peso informados':'● Peso parcialmente estimado';
+   $('totalM3').textContent=fmt(totalM3,3)+' m³'; $('bundleSummary').textContent=`${count} fardos · ${fmt(packM3,4)} m³ por fardo · ${qty.toLocaleString('pt-BR')} unidades`;
+   $('outBundles').textContent=count.toLocaleString('pt-BR'); $('outCubed').textContent=fmt(cubed,2)+' kg';
+   $('outWeight').textContent=weight===null?'Não informado':fmt(weight,2)+' kg'; $('weightNote').textContent=weightSource;
+   $('outChargeable').textContent=fmt(chargeable,2)+' kg'; $('outFreight').textContent=brl(freight); $('freightNote').textContent=`${brl(rate)} por kg · mínimo ${brl(min)} · taxas ${brl(extras)}`;
+   const unitDims=[L,W,H].map(x=>fmt(x,2)).join(' × ')+` ${$('unit').value}`;
+   const rows=[];
+   if(count>1 && lastQty!==per) rows.push(`<tr><td>Fardo padrão</td><td>${count-1}</td><td>${unitDims}</td><td>${fmt(packM3,4)}</td><td>${fmt(packM3*(count-1),3)}</td></tr><tr><td>Último fardo</td><td>1 (${lastQty} un.)</td><td>${unitDims}</td><td>${fmt(packM3,4)}</td><td>${fmt(packM3,3)}</td></tr>`);
+   else rows.push(`<tr><td>Fardos</td><td>${count}</td><td>${unitDims}</td><td>${fmt(packM3,4)}</td><td>${fmt(totalM3,3)}</td></tr>`);
+   $('volumeRows').innerHTML=rows.join('');
+   const job=$('job').value.trim()||'Sem referência';
+   $('printReport').innerHTML=`<h2>CROMAGRAFYC — Resumo de cubagem</h2><p><strong>Produto:</strong> ${product}<br><strong>Cliente / referência:</strong> ${job}<br><strong>Quantidade:</strong> ${qty} unidades</p><p><strong>Cubagem total:</strong> ${fmt(totalM3,3)} m³<br><strong>Fardos:</strong> ${count}<br><strong>Peso cubado:</strong> ${fmt(cubed,2)} kg<br><strong>Peso real/estimado:</strong> ${weight===null?'Não informado':fmt(weight,2)+' kg'}<br><strong>Peso tarifável usado:</strong> ${fmt(chargeable,2)} kg<br><strong>Frete de referência:</strong> ${brl(freight)}</p><p>Fator: ${fmt(factor,2)} kg/m³. Tarifa: ${brl(rate)}/kg. ${$('carrier').value.trim()?'Tabela/transportadora: '+$('carrier').value.trim()+'.':''}</p><p><small>Estimativa para orçamento preliminar. Confirmar medidas, pesos e regras com a transportadora.</small></p>`;
+   return {product,job,qty,count,packM3,totalM3,cubed,weight,weightSource,chargeable,freight,factor,rate,min,extras,L,W,H,unit:$('unit').value};
+ }
+ document.querySelectorAll('[data-product]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-product]').forEach(b=>b.classList.toggle('active',b===btn));product=btn.dataset.product;}));
+ $('perBundle').addEventListener('input',()=>{const q=num('qty'),p=num('perBundle');$('bundles').value=q>0&&p>0?Math.ceil(q/p):'—';});
+ $('qty').addEventListener('input',()=>{const q=num('qty'),p=num('perBundle');$('bundles').value=q>0&&p>0?Math.ceil(q/p):'—';});
+ $('calculate').addEventListener('click',calculate);
+ $('reset').addEventListener('click',()=>{if(!confirm('Limpar os dados desta simulação?'))return; document.querySelectorAll('input').forEach(i=>{if(i.id==='qty')i.value='5000';else if(i.id==='prodL')i.value='32';else if(i.id==='prodW')i.value='24';else if(i.id==='prodH')i.value='0.5';else if(i.id==='perBundle')i.value='200';else if(i.id==='packL')i.value='60';else if(i.id==='packW')i.value='40';else if(i.id==='packH')i.value='30';else if(i.id==='factor')i.value='300';else if(i.id==='rate')i.value='4';else if(i.id==='minimum'||i.id==='extras')i.value='0';else i.value='';});$('unit').value='cm';$('bundles').value='25';calculate();});
+ $('print').addEventListener('click',()=>{if(calculate())window.print();});
+ $('copy').addEventListener('click',async()=>{const r=calculate();if(!r)return;const text=`CROMAGRAFYC — Resumo de cubagem\nProduto: ${r.product}\nReferência: ${r.job}\nQuantidade: ${r.qty} unidades\nFardos: ${r.count}\nCubagem total: ${fmt(r.totalM3,3)} m³\nPeso cubado: ${fmt(r.cubed,2)} kg\nPeso real/estimado: ${r.weight===null?'Não informado':fmt(r.weight,2)+' kg'}\nPeso tarifável: ${fmt(r.chargeable,2)} kg\nFrete de referência: ${brl(r.freight)}\n\nEstimativa preliminar; confirmar regras com a transportadora.`;try{await navigator.clipboard.writeText(text);$('copy').textContent='Resumo copiado!';setTimeout(()=>$('copy').textContent='Copiar resumo',1800);}catch(e){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();$('copy').textContent='Resumo copiado!';setTimeout(()=>$('copy').textContent='Copiar resumo',1800);}});
+ calculate();
+})();
+</script>
+</body>
+</html>
